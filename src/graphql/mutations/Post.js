@@ -42,8 +42,31 @@ const editPost = async (obj, args, context) => {
     }
   }
   // TODO - finish this function which edits a post given its id and new content.
+  const user = await User.query()
+    .where('id', context.user.id)
+    .then(res => res[0])
+
+  if (!user) {
+    return {
+      error: {
+        message: 'Logged in user does not exist',
+      },
+    }
+  }
+
+  const newPost = await user
+    .$relatedQuery('posts')
+    .patchAndFetchById({ id }, { newContent })
+
+  if (!newPost) {
+    throw new Error('Could not edit post')
+  }
+
+  return {
+    newPost,
+  }
 }
 
-const resolver = { Mutation: { createPost } }
+const resolver = { Mutation: { createPost, editPost } }
 
 module.exports = resolver

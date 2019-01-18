@@ -1,7 +1,7 @@
 const BaseModel = require('./BaseModel')
 const { BelongsToOneRelation } = require('objection')
 
-class Post extends BaseModel {
+class Hobby extends BaseModel {
   static get tableName() {
     return 'hobbies'
   }
@@ -22,4 +22,4 @@ class Post extends BaseModel {
   }
 }
 
-module.exports = Post
+module.exports = Hobby

@@ -6,39 +6,31 @@ module.exports = gql`
     users(
       substr: String
       hometown: String
-      house: String
-      concentration: String
-    ): [User!]
+      house: House
+      concentration: Concentration
+      hobbies: HobbyInput
+    ): [User!]!
     post(id: ID!): Post!
-    posts: [Post!]
+    posts: [Post!]!
   }
 
   type Mutation {
-    createUser(input: CreateUserInput!): LoginReturn!
+    createUser(input: CreateUserInput!): LoginUserReturn!
+    loginUser(email: String!, password: String!): LoginUserReturn!
     createPost(content: String!): CreatePostReturn!
     editPost(id: ID!, newContent: String!): EditPostReturn!
-    loginUser(email: String!, password: String!): LoginReturn!
-  }
-
-  type CreatePostReturn {
-    post: Post
-    error: Error
-  }
-
-  type EditPostReturn {
-    post: Post
-    error: Error
+    editUser(input: CreateUserInput!): EditUserReturn!
+    # friendUser(id:ID!):
   }
 
   input CreateUserInput {
     name: String!
     email: String!
-    password: String!
     birthday: String
-    concentration: String
+    concentration: Concentration
     hometown: String
-    house: String
-    gender: String
+    house: House
+    gender: Gender
     bio: String
     picture: String
     hobbies: [HobbyInput!]
@@ -48,31 +40,102 @@ module.exports = gql`
     hobby: String!
   }
 
+  type Error {
+    message: String
+  }
+
+  type LoginUserReturn {
+    error: Error
+    token: String
+    User: User
+  }
+
+  type EditUserReturn {
+    error: Error
+    token: String
+    User: User
+  }
+
+  type CreatePostReturn {
+    error: Error
+    Post: Post
+  }
+
+  type EditPostReturn {
+    error: Error
+    Post: Post
+  }
+
   type User {
     id: ID!
     name: String!
     email: String!
     birthday: String
-    concentration: String
+    concentration: Concentration
     hometown: String
-    house: String
-    gender: String
+    house: House
+    gender: Gender
     bio: String
     picture: String
+    hobbies: [Hobby!]
+    posts: [Post!]
+  }
+
+  enum Concentration {
+    CS
+    CLASSICS
+    ANTHRO
+    EC
+    APPLIEDMATH
+  }
+
+  enum House {
+    FRESHMAN
+    HOUSING
+    ADAMS
+    ELIOT
+    MATHER
+    CABOT
+    KIRKLAND
+    PFOHO
+    CURRIER
+    LEVERETT
+    QUINCY
+    DUDLEY
+    LOWELL
+    WINTHROP
+    DUNSTER
+  }
+
+  enum Gender {
+    FEMALE
+    MALE
+    OTHER
+  }
+
+  type Hobby {
+    id: ID!
+    hobby: HobbyEnum!
+    userId: ID!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  enum HobbyEnum {
+    SPORTS
+    ARTS
+    MUSIC
+    READING
+    TRAVEL
+    DINING
+    CODING
   }
 
   type Post {
     id: ID!
     content: String!
-  }
-
-  type LoginReturn {
-    user: User
-    token: String
-    error: Error
-  }
-
-  type Error {
-    message: String
+    userId: ID!
+    createdAt: String!
+    updatedAt: String!
   }
 `

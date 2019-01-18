@@ -33,8 +33,8 @@ class User extends BaseModel {
           from: 'users.id',
           through: {
             // follows is the join table.
-            from: 'follows.followerId',
-            to: 'follows.followingId',
+            from: 'follows.userId',
+            to: 'follows.friendId',
           },
           to: 'users.id',
         },

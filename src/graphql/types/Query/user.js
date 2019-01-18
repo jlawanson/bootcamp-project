@@ -2,6 +2,10 @@ const User = require('../../../models/User')
 
 const userResolver = async (obj, args, context) => {
   // TODO: Write a resolver which returns a user given a user id.
+  if (!context.user) throw new Error('User not logged in')
+
+  const user = await User.query().findById(args.id)
+  return user
 }
 
 const usersResolver = async (obj, args, context) => {
@@ -17,12 +21,53 @@ const usersResolver = async (obj, args, context) => {
     - concentration: include only users who have that concentration
     - hobbies: include only users who have indicated one of the hobbies in that list
   */
+
+  const allUsers = User.query()
+
+  if (substr) {
+    allUsers.whereIn(substr, 'like', 'lower("%name%")')
+  }
+  if (hometown) {
+    allUsers.where('hometown', hometown)
+  }
+  if (house) {
+    allUsers.where('house', house)
+  }
+  if (concentration) {
+    allUsers.where('concentration', concentration)
+  }
+  if (hobbies) {
+    allUsers.whereIn('hobbies', hobbies)
+  }
+
+  // .andWhere('hometown', hometown)
+  // .andWhere('house', house)
+  // .andWhere('concentration', concentration)
+  // .whereIn('hobbies', hobbies)
+  const users = await allUsers
+  return users
+}
+
+const userHobbyResolver = async (obj, args, context) => {
+  const user = await User.query().findById(obj.id)
+  const userHobby = await user.$relatedQuery('hobbies')
+  return userHobby
+}
+
+const userPostResolver = async (obj, args, context) => {
+  const user = await User.query().findById(obj.id)
+  const userPost = await user.$relatedQuery('posts')
+  return userPost
 }
 
 const resolver = {
   Query: {
     user: userResolver,
     users: usersResolver,
+  },
+  User: {
+    hobbies: userHobbyResolver,
+    posts: userPostResolver,
   },
 }
 
